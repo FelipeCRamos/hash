@@ -7,8 +7,8 @@
 
 /** Accounts definition */
 struct Account{
-	using AcctKey = std::tuple<std::string, int, int, int>;
-	// typedef std::tuple<std::string, int, int, int> AcctKey;
+	// using AcctKey = std::tuple<std::string, int, int, int>;
+	typedef std::tuple<std::string, int, int, int> AcctKey;
     std::string client_name;
     int bank_code;
     int branch_code;

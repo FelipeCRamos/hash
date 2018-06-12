@@ -18,10 +18,10 @@ using size_type = size_t; 	// Simple Alias
 
 /** Hash Table Class */
 template <
-			class KeyType,
-		  	class DataType,
-		  	class KeyHash = std::hash<KeyType>,
-		  	class KeyEqual = std::equal_to<KeyType>
+			class kType,
+		  	class dType,
+		  	class kHash = std::hash<kType>,
+		  	class kEqual = std::equal_to<kType>
 		  >
 class HashTbl{
 	/** Hash Entry Class, used to hold keys/data from the hash table. */
@@ -29,16 +29,16 @@ class HashTbl{
 	/*{{{*/
 		public:
 			/** HashEntry Constructor */
-			HashEntry(KeyType k_, DataType d_): m_key(k_), m_data(d_){};
+			HashEntry(kType k_, dType d_): m_key(k_), m_data(d_){};
 
-			KeyType m_key;		//!< Stores the key for an entry.
-			DataType m_data;	//!< Stores the data for an entry.
+			kType m_key;		//!< Stores the key for an entry.
+			dType m_data;	//!< Stores the data for an entry.
 	};
 	/*}}}*/
 
 	public:
 	/*{{{*/
-		using Entry = HashEntry;
+		typedef HashEntry Entry;
 
 		/** Hash Table Constructor */
 		HashTbl( void ): tablesize(101), currentSize(0){
@@ -53,11 +53,11 @@ class HashTbl{
 
 		/** Inserts Elements related to a `key_` on the table.
 		 *	\return True if the insertion was successful, false otherwise. */ 
-		bool insert( const KeyType &, const DataType & );
+		bool insert( const kType &, const dType & );
 
 		/** Recovers the information related to the `key_`.
 		 *	\return True if it finds the information, False otherwise. */
-		bool retrieve( const KeyType &,  DataType & ) const;
+		bool retrieve( const kType &,  dType & ) const;
 
 		/** Prints the entire hash table. */
 		void print() const;
@@ -76,20 +76,22 @@ class HashTbl{
 
 		/** Removes an specific element `key_`. 
 		 * \return True if the `key_` was found, false otherwise */
-		bool remove( const KeyType & );
+		bool remove( const kType & );
 	/*}}}*/
 
 	private:
 	/*{{{*/
+		typedef std::forward_list<Entry> _cList;	// Colision list holder
+
 		/* Vector with the list of elements (for collisions) */
-		std::vector< std::forward_list<Entry> > Lists;
+		std::vector<_cList> Lists;
 		
 		size_type tablesize; 		//!< Hash table current size
 		size_type currentSize; 		//!< Total of elements in the table
 	
 		/* Auxiliary Funcs */
-		KeyHash hashFunc; 
-		KeyEqual equalFunc;
+		kHash _hFunc; 
+		kEqual eFunc;
 
 		/** Helps finding the next prime number after table size. */
 		size_type next_prime( size_type );
@@ -102,19 +104,19 @@ class HashTbl{
 // Source Implementation
 
 /* Public Implement {{{*/
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::insert
-( const KeyType &key_, const DataType &data_item_ ){
+template < class kType, class dType, class kHash, class kEqual	>
+bool HashTbl<kType, dType, kHash, kEqual>::insert
+( const kType &k_, const dType &d_item ){
 /*{{{*/
 	/* Elements list */	
-	auto & whichList = Lists[ hashFunc( key_ ) % tablesize ];
-	Entry new_entry( key_, data_item_ );
+	auto & whichList = Lists[ _hFunc( k_ ) % tablesize ];
+	Entry new_entry( k_, d_item );
 	auto itr = whichList.begin(); 							//!< Iterator to the List's begin
 	auto itr_b = whichList.before_begin(); 					//!< Iterator to the position before the list's begin 
 	auto end = whichList.end(); 							//!< Iterator to the list's end
 	for ( /* */; itr != end; ++itr ){
 		itr_b++;
-		if ( equalFunc((*itr).m_key, new_entry.m_key) )
+		if ( eFunc((*itr).m_key, new_entry.m_key) )
 			return false;
 	}
 
@@ -127,15 +129,15 @@ bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::insert
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::retrieve
-( const KeyType &key_, DataType &data_item_ ) const{
+template < class kType, class dType, class kHash, class kEqual	>
+bool HashTbl<kType, dType, kHash, kEqual>::retrieve
+( const kType &key_, dType &d_item ) const{
 /*{{{*/
 	/* Elements list */
-	auto & whichList = Lists[ hashFunc(key_) % tablesize ];
+	auto & whichList = Lists[ _hFunc(key_) % tablesize ];
 	for( auto i = whichList.begin(); i != whichList.end(); ++i ){
-		if ( equalFunc((*i).m_key , key_) ){
-			data_item_ = (*i).m_data;
+		if ( eFunc((*i).m_key , key_) ){
+			d_item = (*i).m_data;
 			return true;
 		}
 	}
@@ -143,8 +145,8 @@ bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::retrieve
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::print( void ) const{
+template < class kType, class dType, class kHash, class kEqual	>
+void HashTbl<kType, dType, kHash, kEqual>::print( void ) const{
 /*{{{*/
 	if( !Lists.empty() ){
 		for( auto Lists_iter = Lists.begin(); Lists_iter != Lists.end(); ++Lists_iter ){
@@ -162,41 +164,41 @@ void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::print( void ) const{
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::clear( void ){
+template < class kType, class dType, class kHash, class kEqual	>
+void HashTbl<kType, dType, kHash, kEqual>::clear( void ){
 /*{{{*/
 	Lists.clear();
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::empty( void ) const{
+template < class kType, class dType, class kHash, class kEqual	>
+bool HashTbl<kType, dType, kHash, kEqual>::empty( void ) const{
 /*{{{*/
 	return this->currentSize == 0;
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-size_type HashTbl<KeyType, DataType, KeyHash, KeyEqual>::count( void ) const{
+template < class kType, class dType, class kHash, class kEqual	>
+size_type HashTbl<kType, dType, kHash, kEqual>::count( void ) const{
 /*{{{*/
 	return this->currentSize;
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-size_type HashTbl<KeyType, DataType, KeyHash, KeyEqual>::capacity( void ) const{
+template < class kType, class dType, class kHash, class kEqual	>
+size_type HashTbl<kType, dType, kHash, kEqual>::capacity( void ) const{
 /*{{{*/
 	return this->tablesize;
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::remove( const KeyType &key_ ){
+template < class kType, class dType, class kHash, class kEqual	>
+bool HashTbl<kType, dType, kHash, kEqual>::remove( const kType &key_ ){
 /*{{{*/
-	auto &whichList = Lists[ hashFunc(key_) % tablesize ];
+	auto &whichList = Lists[ _hFunc(key_) % tablesize ];
 	auto itr_back = whichList.before_begin();
 	for( auto i = whichList.begin(); i != whichList.end(); ++i ){
-		if( equalFunc((*i).m_key, key_ ) ){
+		if( eFunc((*i).m_key, key_ ) ){
 			whichList.erase_after( itr_back );
 			--currentSize;
 			return true;
@@ -211,8 +213,8 @@ bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::remove( const KeyType &key_ 
 
 /* Private Implement {{{*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-size_type HashTbl<KeyType, DataType, KeyHash, KeyEqual>::next_prime( size_type number ){
+template < class kType, class dType, class kHash, class kEqual	>
+size_type HashTbl<kType, dType, kHash, kEqual>::next_prime( size_type number ){
 /*{{{*/
 	for( size_type i = 2; i < sqrt( number ); ++i ) {
 		if(number % i == 0) return next_prime( number + 1 );
@@ -221,8 +223,8 @@ size_type HashTbl<KeyType, DataType, KeyHash, KeyEqual>::next_prime( size_type n
 }
 /*}}}*/
 
-template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
-void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::rehash( void ){
+template < class kType, class dType, class kHash, class kEqual	>
+void HashTbl<kType, dType, kHash, kEqual>::rehash( void ){
 /*{{{*/
 	std::vector< std::forward_list<Entry> > oldLists = Lists;
 	
