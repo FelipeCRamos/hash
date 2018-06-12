@@ -1,4 +1,4 @@
-# Makefile for the Hash Table project
+# Makefile for the Hash Table Project
 #
 # Author:
 # Felipe Ramos
