@@ -79,8 +79,8 @@ class HashTbl{
 		/* Vector with the list of elements (for collisions) */
 		std::vector< std::forward_list<HashEntry> > Lists;
 		
-		size_type currentSize; 		//!< Total of elements in the table
 		size_type tablesize; 		//!< Hash table current size
+		size_type currentSize; 		//!< Total of elements in the table
 	
 		/* Auxiliary Funcs */
 		KeyHash hashFunc; 
