@@ -150,11 +150,11 @@ void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::print( void ) const{
 		for( auto Lists_iter = Lists.begin(); Lists_iter != Lists.end(); ++Lists_iter ){
 			if( !(*Lists_iter ).empty() )
 				for( auto j = (*Lists_iter).begin(); j != (*Lists_iter).end(); ++j ){
-					std::cout << "\n\nKey { ";
-					std::cout << (*j).m_key;
-					std::cout << " };\nData {";
+					// std::cout << "\n\nKey { ";
+					// std::cout << (*j).m_key;
+					// std::cout << " };\nData {";
 					std::cout << (*j).m_data;
-					std::cout << "};\n";
+					// std::cout << "};\n";
 				}
 		}
 
