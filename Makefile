@@ -25,7 +25,7 @@ HEADERS := $(wildcard $(INCDIR)/*)
 SOURCES := $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-all: project
+all: project docs
 
 project: $(OBJECTS) $(HEADERS) | $(BINDIR)
 	$(CC) $(OBJECTS) $(CFLAGS) -o $(BINDIR)/$(PROJ_NAME)

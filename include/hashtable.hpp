@@ -8,11 +8,15 @@
 #include <math.h>
 #include <string>
 
-/*! \file 	hash.hpp
- * 	\author	Felipe Ramos */
+/** 
+ *	\file 	hash.hpp
+ * 	\author	Felipe Ramos
+ * 	\title	Hash-Table project
+ */
 
-using size_type = size_t;		//!< Simple Alias
+using size_type = size_t; 	// Simple Alias
 
+/** Hash Table Class */
 template <
 			class KeyType,
 		  	class DataType,
@@ -20,6 +24,7 @@ template <
 		  	class KeyEqual = std::equal_to<KeyType>
 		  >
 class HashTbl{
+	/** Hash Entry Class, used to hold keys/data from the hash table. */
 	class HashEntry{
 	/*{{{*/
 		public:
@@ -77,7 +82,7 @@ class HashTbl{
 	private:
 	/*{{{*/
 		/* Vector with the list of elements (for collisions) */
-		std::vector< std::forward_list<HashEntry> > Lists;
+		std::vector< std::forward_list<Entry> > Lists;
 		
 		size_type tablesize; 		//!< Hash table current size
 		size_type currentSize; 		//!< Total of elements in the table
@@ -103,7 +108,7 @@ bool HashTbl<KeyType, DataType, KeyHash, KeyEqual>::insert
 /*{{{*/
 	/* Elements list */	
 	auto & whichList = Lists[ hashFunc( key_ ) % tablesize ];
-	HashEntry new_entry( key_, data_item_ );
+	Entry new_entry( key_, data_item_ );
 	auto itr = whichList.begin(); 							//!< Iterator to the List's begin
 	auto itr_b = whichList.before_begin(); 					//!< Iterator to the position before the list's begin 
 	auto end = whichList.end(); 							//!< Iterator to the list's end
@@ -145,11 +150,11 @@ void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::print( void ) const{
 		for( auto Lists_iter = Lists.begin(); Lists_iter != Lists.end(); ++Lists_iter ){
 			if( !(*Lists_iter ).empty() )
 				for( auto j = (*Lists_iter).begin(); j != (*Lists_iter).end(); ++j ){
-					std::cout << "Key< ";
+					std::cout << "\n\nKey { ";
 					std::cout << (*j).m_key;
-					std::cout << " >, Data< ";
+					std::cout << " };\nData {";
 					std::cout << (*j).m_data;
-					std::cout << " >\n";
+					std::cout << "};\n";
 				}
 		}
 
@@ -219,7 +224,7 @@ size_type HashTbl<KeyType, DataType, KeyHash, KeyEqual>::next_prime( size_type n
 template < class KeyType, class DataType, class KeyHash, class KeyEqual	>
 void HashTbl<KeyType, DataType, KeyHash, KeyEqual>::rehash( void ){
 /*{{{*/
-	std::vector< std::forward_list<HashEntry> > oldLists = Lists;
+	std::vector< std::forward_list<Entry> > oldLists = Lists;
 	
 	/* Creates a new double-sized empty table */
 	tablesize = next_prime( tablesize * 2 );
